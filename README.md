@@ -2,9 +2,24 @@
 
 1. Buka terminal, lalu masuk ke direktori project ini.
 2. Jalankan perintah `composer install` untuk menginstall semua dependensi.
-3. Jalankan perintah `composer start` untuk menjalankan aplikasi.
-4. Buka browser dan akses `http://localhost:8080` untuk melihat aplikasi.
-5. Bila Ingin Bantu Push Lewat WA, Cantumkan Email Github Anda Untuk Ditambahkan Lalu Saat Push Pastikan Menggunakan Branch Sendiri Supaya Tidak tertabrak Dengan Branch Aslinya (`master`).
+3. Jalankan perintah `php scripts/migrate.php` untuk menjalankan migrasi database.
+   Data Data Yang Sudah Ada:
+
+   - **Super Admin**
+   - Username: `superadmin`
+   - Password: `admin123`
+
+   - **Admin**
+   - Username: `admin`
+   - Password: `admin123`
+
+   - **User**
+   - Username: `jane_smith`
+   - Password: `password123`
+
+4. Jalankan perintah `composer start` untuk menjalankan aplikasi.
+5. Buka browser dan akses `http://localhost:8080` untuk melihat aplikasi.
+6. Bila Ingin Bantu Push Lewat WA, Cantumkan Email Github Anda Untuk Ditambahkan Lalu Saat Push Pastikan Menggunakan Branch Sendiri Supaya Tidak tertabrak Dengan Branch Aslinya (`master`).
 
 # Slim Framework 4 Skeleton Application
 

@@ -7,7 +7,7 @@ $container->set('db', function () {
 		'type' => 'mysql',
 		'host' => 'localhost',
 		'port' => 3306,
-		'database' => '',
+		'database' => 'lowonganKerjaGamelab',
 		'username' => 'root',
 		'password' => '',
 		'charset' => 'utf8mb4',

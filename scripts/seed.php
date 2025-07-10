@@ -17,7 +17,9 @@ $db = $container->get('db');
 $seederFiles = [
 	__DIR__ . '/../database/seeders/RolesSeeder.php',
 	__DIR__ . '/../database/seeders/UsersSeeder.php',
-	__DIR__ . '/../database/seeders/AdminssSeeder.php',
+	__DIR__ . '/../database/seeders/AdminsSeeder.php',
+	__DIR__ . '/../database/seeders/OrganizationsSeeder.php',
+	__DIR__ . '/../database/seeders/TypeLowongansSeeder.php',
 ];
 
 foreach ($seederFiles as $file) {
