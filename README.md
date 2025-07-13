@@ -4,18 +4,18 @@
 2. Jalankan perintah `composer install` untuk menginstall semua dependensi.
 3. Jalankan perintah `php scripts/migrate.php fresh` untuk menjalankan migrasi database.
    Data Data Yang Sudah Ada:
-   - **Super Admin**
-   - Username: `superadmin`
-   - Password: `admin123`
-   - **Admin**
-   - Username: `admin`
-   - Password: `admin123`
-   - **Recruiter**
-   - Username: `recruiter`
-   - Password: `recruiter123`
-   - **User**
-   - Username: `jane_smith`
-   - Password: `password123`
+   - **Super Admin** <br>
+     Username: `superadmin` <br>
+     Password: `admin123`
+   - **Admin** <br>
+     Username: `admin` <br>
+     Password: `admin123`
+   - **Recruiter** <br>
+     Username: `recruiter` <br>
+     Password: `recruiter123`
+   - **User** <br>
+     Username: `jane_smith` <br>
+     Password: `password123`
 4. Jalankan perintah `composer start` untuk menjalankan aplikasi.
 5. Buka browser dan akses `http://localhost:8080` untuk melihat aplikasi.
 6. Bila Ingin Bantu Push Lewat WA, Cantumkan Email Github Anda Untuk Ditambahkan Lalu Saat Push Pastikan Menggunakan Branch Sendiri Supaya Tidak tertabrak Dengan Branch Aslinya (`master`).
