@@ -4,26 +4,40 @@
 2. Jalankan perintah `composer install` untuk menginstall semua dependensi.
 3. Jalankan perintah `php scripts/migrate.php fresh` untuk menjalankan migrasi database.
    Data Data Yang Sudah Ada:
-
    - **Super Admin**
    - Username: `superadmin`
    - Password: `admin123`
-
    - **Admin**
    - Username: `admin`
    - Password: `admin123`
-
    - **Recruiter**
    - Username: `recruiter`
    - Password: `recruiter123`
-
    - **User**
    - Username: `jane_smith`
    - Password: `password123`
-
 4. Jalankan perintah `composer start` untuk menjalankan aplikasi.
 5. Buka browser dan akses `http://localhost:8080` untuk melihat aplikasi.
 6. Bila Ingin Bantu Push Lewat WA, Cantumkan Email Github Anda Untuk Ditambahkan Lalu Saat Push Pastikan Menggunakan Branch Sendiri Supaya Tidak tertabrak Dengan Branch Aslinya (`master`).
+
+# Tampilan Diagram Struktur Database
+
+![Database Diagram](GambarDiagram.jpeg)
+_Diagram di atas menunjukkan struktur database lengkap untuk aplikasi Lowongan Kerja Gamelab, termasuk semua tabel dan relasi antar tabel._
+
+Database terdiri dari 11 tabel utama:
+
+- **tbl_roles** - Menyimpan jenis peran (Super Admin, Admin, Recruiter)
+- **tbl_users** - Data pengguna/pelamar kerja
+- **tbl_admins** - Data administrator sistem
+- **tbl_organizations** - Data perusahaan/organisasi
+- **tbl_locations** - Data lokasi
+- **tbl_typeLowongans** - Jenis/kategori lowongan kerja
+- **tbl_lowongans** - Data lowongan kerja
+- **tbl_applyLowongans** - Data lamaran pekerjaan
+- **tbl_skills** - Daftar keahlian/skill
+- **tbl_skill_users** - Hubungan many-to-many antara user dan skill
+- **tbl_skill_typeLowongans** - Hubungan many-to-many antara jenis lowongan dan skill yang dibutuhkan
 
 # Slim Framework 4 Skeleton Application
 
