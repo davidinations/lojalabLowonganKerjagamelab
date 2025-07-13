@@ -2,7 +2,7 @@
 
 1. Buka terminal, lalu masuk ke direktori project ini.
 2. Jalankan perintah `composer install` untuk menginstall semua dependensi.
-3. Jalankan perintah `php scripts/migrate.php` untuk menjalankan migrasi database.
+3. Jalankan perintah `php scripts/migrate.php fresh` untuk menjalankan migrasi database.
    Data Data Yang Sudah Ada:
 
    - **Super Admin**
@@ -12,6 +12,10 @@
    - **Admin**
    - Username: `admin`
    - Password: `admin123`
+
+   - **Recruiter**
+   - Username: `recruiter`
+   - Password: `recruiter123`
 
    - **User**
    - Username: `jane_smith`

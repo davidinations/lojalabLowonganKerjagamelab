@@ -25,20 +25,13 @@ return function ($db) {
 			'create_id' => 1,
 			'archived' => 0
 		],
-		// [
-		// 	'nama' => 'HR Manager',
-		// 	'level' => 3,
-		// 	'create_time' => date('Y-m-d H:i:s'),
-		// 	'create_id' => 1,
-		// 	'archived' => 0
-		// ],
-		// [
-		// 	'nama' => 'Recruiter',
-		// 	'level' => 4,
-		// 	'create_time' => date('Y-m-d H:i:s'),
-		// 	'create_id' => 1,
-		// 	'archived' => 0
-		// ]
+		[
+			'nama' => 'Recruiter',
+			'level' => 3,
+			'create_time' => date('Y-m-d H:i:s'),
+			'create_id' => 1,
+			'archived' => 0
+		]
 	];
 
 	foreach ($roles as $role) {

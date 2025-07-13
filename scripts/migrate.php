@@ -119,10 +119,12 @@ function seed($db)
 	// Load seeder files in order
 	$seederFiles = [
 		__DIR__ . '/../database/seeders/RolesSeeder.php',
+		__DIR__ . '/../database/seeders/LocationsSeeder.php',
+		__DIR__ . '/../database/seeders/OrganizationsSeeder.php',
 		__DIR__ . '/../database/seeders/UsersSeeder.php',
 		__DIR__ . '/../database/seeders/AdminsSeeder.php',
-		__DIR__ . '/../database/seeders/OrganizationsSeeder.php',
 		__DIR__ . '/../database/seeders/TypeLowongansSeeder.php',
+		__DIR__ . '/../database/seeders/SkillsSeeder.php',
 	];
 
 	foreach ($seederFiles as $file) {
@@ -181,8 +183,29 @@ function fresh($db)
 {
 	echo "Dropping all tables and running fresh migration...\n";
 
+	// Disable foreign key checks to avoid constraint errors during drop
+	$db->query("SET FOREIGN_KEY_CHECKS = 0");
+
 	// Drop all tables (be careful with this in production!)
-	$tables = ['tbl_applyLowongans', 'tbl_lowongans', 'tbl_users', 'tbl_roles', 'tbl_admins', 'tbl_organizations', 'tbl_typeLowongans', 'migrations'];
+	$tables = [
+		// Our official tables
+		'tbl_skill_typeLowongans',
+		'tbl_skill_users',
+		'tbl_applyLowongans',
+		'tbl_lowongans',
+		'tbl_users',
+		'tbl_roles',
+		'tbl_admins',
+		'tbl_organizations',
+		'tbl_typeLowongans',
+		'tbl_skills',
+		'tbl_locations',
+		'migrations',
+		// Unwanted tables that might exist
+		'berita',
+		'kategori',
+		'users'
+	];
 
 	foreach ($tables as $table) {
 		try {
@@ -192,6 +215,9 @@ function fresh($db)
 			echo "Could not drop table $table: " . $e->getMessage() . "\n";
 		}
 	}
+
+	// Re-enable foreign key checks
+	$db->query("SET FOREIGN_KEY_CHECKS = 1");
 
 	// Recreate migrations table
 	$db->query("
