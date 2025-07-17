@@ -1,0 +1,163 @@
+{% extends "master.twig" %}
+
+{% block title %}Create Organization{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Create New Organization</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="/admin/organizations" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Organizations
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <form method="POST" action="/admin/organizations" id="organizationForm">
+                                <div class="mb-3">
+                                    <label for="nama" class="form-label">Organization Name *</label>
+                                    <input type="text" class="form-control" id="nama" name="nama" required
+                                           value="{{ old.nama ?? '' }}" placeholder="Enter organization name">
+                                    {% if errors.nama %}
+                                        <div class="text-danger small">{{ errors.nama }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="deskripsi" class="form-label">Description</label>
+                                    <textarea class="form-control" id="deskripsi" name="deskripsi" rows="4"
+                                              placeholder="Enter organization description">{{ old.deskripsi ?? '' }}</textarea>
+                                    {% if errors.deskripsi %}
+                                        <div class="text-danger small">{{ errors.deskripsi }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="website" class="form-label">Website</label>
+                                    <input type="url" class="form-control" id="website" name="website"
+                                           value="{{ old.website ?? '' }}" placeholder="https://example.com">
+                                    {% if errors.website %}
+                                        <div class="text-danger small">{{ errors.website }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Contact Email</label>
+                                    <input type="email" class="form-control" id="email" name="email"
+                                           value="{{ old.email ?? '' }}" placeholder="contact@organization.com">
+                                    {% if errors.email %}
+                                        <div class="text-danger small">{{ errors.email }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone"
+                                           value="{{ old.phone ?? '' }}" placeholder="+62 xxx-xxxx-xxxx">
+                                    {% if errors.phone %}
+                                        <div class="text-danger small">{{ errors.phone }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">Address</label>
+                                    <textarea class="form-control" id="address" name="address" rows="3"
+                                              placeholder="Enter organization address">{{ old.address ?? '' }}</textarea>
+                                    {% if errors.address %}
+                                        <div class="text-danger small">{{ errors.address }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="employee_count" class="form-label">Employee Count</label>
+                                            <select class="form-select" id="employee_count" name="employee_count">
+                                                <option value="">Select range</option>
+                                                <option value="1-10" {{ (old.employee_count ?? '') == '1-10' ? 'selected' : '' }}>1-10 employees</option>
+                                                <option value="11-50" {{ (old.employee_count ?? '') == '11-50' ? 'selected' : '' }}>11-50 employees</option>
+                                                <option value="51-200" {{ (old.employee_count ?? '') == '51-200' ? 'selected' : '' }}>51-200 employees</option>
+                                                <option value="201-1000" {{ (old.employee_count ?? '') == '201-1000' ? 'selected' : '' }}>201-1000 employees</option>
+                                                <option value="1000+" {{ (old.employee_count ?? '') == '1000+' ? 'selected' : '' }}>1000+ employees</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="industry" class="form-label">Industry</label>
+                                            <input type="text" class="form-control" id="industry" name="industry"
+                                                   value="{{ old.industry ?? '' }}" placeholder="e.g., Technology, Healthcare">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Create Organization
+                                    </button>
+                                    <a href="/admin/organizations" class="btn btn-secondary">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="card-title mb-0">Help</h6>
+                        </div>
+                        <div class="card-body">
+                            <h6>Organization Guidelines</h6>
+                            <ul class="small text-muted">
+                                <li>Organization name should be unique and descriptive</li>
+                                <li>Description helps users understand the organization</li>
+                                <li>Contact information helps job seekers reach out</li>
+                                <li>All fields except name are optional</li>
+                            </ul>
+
+                            <hr>
+
+                            <h6>Next Steps</h6>
+                            <p class="small text-muted">
+                                After creating the organization, you can:
+                            </p>
+                            <ul class="small text-muted">
+                                <li>Assign admins to manage it</li>
+                                <li>Create job postings</li>
+                                <li>Update organization profile</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('organizationForm').addEventListener('submit', function(e) {
+    const nama = document.getElementById('nama').value.trim();
+    
+    if (!nama) {
+        e.preventDefault();
+        alert('Organization name is required.');
+        document.getElementById('nama').focus();
+        return false;
+    }
+    
+    if (nama.length < 2) {
+        e.preventDefault();
+        alert('Organization name must be at least 2 characters long.');
+        document.getElementById('nama').focus();
+        return false;
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,364 @@
+{% extends "master.twig" %}
+
+{% block title %}Manage Skills{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Manage Skills</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createSkillModal">
+                        <i class="fas fa-plus"></i> Add New Skill
+                    </button>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h4 class="text-primary">{{ skills|length }}</h4>
+                            <small class="text-muted">Total Skills</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h4 class="text-success">{{ active_skills_count ?? 0 }}</h4>
+                            <small class="text-muted">Active Skills</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h4 class="text-info">{{ skills_in_jobs ?? 0 }}</h4>
+                            <small class="text-muted">Used in Jobs</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h4 class="text-warning">{{ skills_by_users ?? 0 }}</h4>
+                            <small class="text-muted">Used by Users</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="categoryFilter" class="form-label">Filter by Category</label>
+                            <select class="form-select" id="categoryFilter" onchange="filterSkills()">
+                                <option value="">All Categories</option>
+                                <option value="Programming">Programming</option>
+                                <option value="Design">Design</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Management">Management</option>
+                                <option value="Languages">Languages</option>
+                                <option value="Tools">Tools</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="searchSkill" class="form-label">Search Skills</label>
+                            <input type="text" class="form-control" id="searchSkill" placeholder="Search by name..." onkeyup="filterSkills()">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="statusFilter" class="form-label">Status</label>
+                            <select class="form-select" id="statusFilter" onchange="filterSkills()">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    {% if skills|length > 0 %}
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover" id="skillsTable">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Skill Name</th>
+                                        <th>Category</th>
+                                        <th>Description</th>
+                                        <th>Users</th>
+                                        <th>Jobs</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for skill in skills %}
+                                    <tr data-category="{{ skill.category ?? 'Other' }}" data-status="{{ skill.active ? 'active' : 'inactive' }}">
+                                        <td>{{ skill.id }}</td>
+                                        <td>
+                                            <strong>{{ skill.nama }}</strong>
+                                            {% if skill.icon %}
+                                                <i class="{{ skill.icon }} ms-2 text-muted"></i>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ skill.category ?? 'Other' }}</span>
+                                        </td>
+                                        <td>
+                                            {% if skill.description %}
+                                                {{ skill.description|slice(0, 80) }}{% if skill.description|length > 80 %}...{% endif %}
+                                            {% else %}
+                                                <span class="text-muted">No description</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">{{ skill.user_count ?? 0 }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-success">{{ skill.job_count ?? 0 }}</span>
+                                        </td>
+                                        <td>
+                                            {% if skill.active %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Inactive</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-sm btn-outline-warning" title="Edit Skill"
+                                                        onclick="editSkill({{ skill.id }}, '{{ skill.nama }}', '{{ skill.description ?? '' }}', '{{ skill.category ?? '' }}', '{{ skill.icon ?? '' }}', {{ skill.active ? 'true' : 'false' }})">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" title="Delete Skill"
+                                                        onclick="deleteSkill({{ skill.id }}, '{{ skill.nama }}')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-cogs fa-3x text-muted mb-3"></i>
+                            <h5>No Skills Found</h5>
+                            <p class="text-muted">There are no skills in the system yet.</p>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createSkillModal">
+                                <i class="fas fa-plus"></i> Add First Skill
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Skill Modal -->
+<div class="modal fade" id="createSkillModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Skill</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="/admin/skills" id="createSkillForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="create_nama" class="form-label">Skill Name *</label>
+                                <input type="text" class="form-control" id="create_nama" name="nama" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="create_category" class="form-label">Category</label>
+                                <select class="form-select" id="create_category" name="category">
+                                    <option value="Programming">Programming</option>
+                                    <option value="Design">Design</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Management">Management</option>
+                                    <option value="Languages">Languages</option>
+                                    <option value="Tools">Tools</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="create_description" class="form-label">Description</label>
+                        <textarea class="form-control" id="create_description" name="description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="create_icon" class="form-label">Icon Class (optional)</label>
+                                <input type="text" class="form-control" id="create_icon" name="icon" placeholder="e.g., fab fa-php">
+                                <div class="form-text">Use FontAwesome or Bootstrap icon classes</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="create_active" class="form-label">Status</label>
+                                <select class="form-select" id="create_active" name="active">
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Skill</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Skill Modal -->
+<div class="modal fade" id="editSkillModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Skill</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="editSkillForm">
+                <input type="hidden" name="_METHOD" value="PUT">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="edit_nama" class="form-label">Skill Name *</label>
+                                <input type="text" class="form-control" id="edit_nama" name="nama" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="edit_category" class="form-label">Category</label>
+                                <select class="form-select" id="edit_category" name="category">
+                                    <option value="Programming">Programming</option>
+                                    <option value="Design">Design</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Management">Management</option>
+                                    <option value="Languages">Languages</option>
+                                    <option value="Tools">Tools</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="edit_description" class="form-label">Description</label>
+                        <textarea class="form-control" id="edit_description" name="description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="edit_icon" class="form-label">Icon Class (optional)</label>
+                                <input type="text" class="form-control" id="edit_icon" name="icon" placeholder="e.g., fab fa-php">
+                                <div class="form-text">Use FontAwesome or Bootstrap icon classes</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="edit_active" class="form-label">Status</label>
+                                <select class="form-select" id="edit_active" name="active">
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Skill</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete skill <strong id="deleteSkillName"></strong>?</p>
+                <p class="text-muted">This action cannot be undone and will remove the skill from all users and job requirements.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <input type="hidden" name="_METHOD" value="DELETE">
+                    <button type="submit" class="btn btn-danger">Delete Skill</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterSkills() {
+    const categoryFilter = document.getElementById('categoryFilter').value;
+    const searchFilter = document.getElementById('searchSkill').value.toLowerCase();
+    const statusFilter = document.getElementById('statusFilter').value;
+    const rows = document.querySelectorAll('#skillsTable tbody tr');
+    
+    rows.forEach(row => {
+        const category = row.dataset.category;
+        const status = row.dataset.status;
+        const skillName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+        
+        let show = true;
+        
+        if (categoryFilter && category !== categoryFilter) show = false;
+        if (statusFilter && status !== statusFilter) show = false;
+        if (searchFilter && !skillName.includes(searchFilter)) show = false;
+        
+        row.style.display = show ? '' : 'none';
+    });
+}
+
+function editSkill(id, nama, description, category, icon, active) {
+    document.getElementById('edit_nama').value = nama;
+    document.getElementById('edit_description').value = description;
+    document.getElementById('edit_category').value = category || 'Other';
+    document.getElementById('edit_icon').value = icon;
+    document.getElementById('edit_active').value = active ? '1' : '0';
+    document.getElementById('editSkillForm').action = '/admin/skills/' + id;
+    new bootstrap.Modal(document.getElementById('editSkillModal')).show();
+}
+
+function deleteSkill(skillId, skillName) {
+    document.getElementById('deleteSkillName').textContent = skillName;
+    document.getElementById('deleteForm').action = '/admin/skills/' + skillId;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script>
+{% endblock %}

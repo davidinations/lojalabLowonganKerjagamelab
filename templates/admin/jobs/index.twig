@@ -1,0 +1,160 @@
+{% extends "master.twig" %}
+
+{% block title %}Admin - Manage Jobs{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Manage Jobs</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    {% if admin.role_level <= 2 %}
+                        <a href="/admin/jobs/create" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Post New Job
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    {% if jobs|length > 0 %}
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Job Title</th>
+                                        <th>Organization</th>
+                                        <th>Location</th>
+                                        <th>Type</th>
+                                        <th>Posted</th>
+                                        <th>Applications</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for job in jobs %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ job.nama_lowongan }}</strong>
+                                            {% if job.deskripsi %}
+                                                <br><small class="text-muted">{{ job.deskripsi|slice(0, 50) }}{% if job.deskripsi|length > 50 %}...{% endif %}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if job.organization_name %}
+                                                {{ job.organization_name }}
+                                            {% else %}
+                                                <span class="text-muted">Unknown</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if job.location_name %}
+                                                {{ job.location_name }}
+                                            {% else %}
+                                                <span class="text-muted">Not specified</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if job.type_name %}
+                                                <span class="badge bg-info">{{ job.type_name }}</span>
+                                            {% else %}
+                                                <span class="text-muted">Not specified</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if job.create_time %}
+                                                {{ job.create_time|date('d M Y') }}
+                                            {% else %}
+                                                <span class="text-muted">Unknown</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="/admin/jobs/{{ job.id }}/applications" class="btn btn-sm btn-outline-info">
+                                                View Applications
+                                            </a>
+                                        </td>
+                                        <td>
+                                            {% if job.archived == 0 %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Archived</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="/admin/jobs/{{ job.id }}" class="btn btn-sm btn-outline-primary" title="View Job">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                {% if admin.role_level <= 2 or (admin.role_level == 3 and job.organization_id == admin.organization_id) %}
+                                                    {# Admin can edit all, Recruiter can edit only their org jobs #}
+                                                    <a href="/admin/jobs/{{ job.id }}/edit" class="btn btn-sm btn-outline-warning" title="Edit Job">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Delete Job" 
+                                                            onclick="deleteJob({{ job.id }}, '{{ job.nama_lowongan }}')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-briefcase fa-3x text-muted mb-3"></i>
+                            <h5>No Jobs Found</h5>
+                            {% if admin.role_level == 3 %}
+                                <p class="text-muted">No jobs posted by your organization yet.</p>
+                            {% else %}
+                                <p class="text-muted">No jobs have been posted yet.</p>
+                            {% endif %}
+                            {% if admin.role_level <= 2 %}
+                                <a href="/admin/jobs/create" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Post First Job
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete job <strong id="deleteJobName"></strong>?</p>
+                <p class="text-muted">This action will archive the job and cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <input type="hidden" name="_METHOD" value="DELETE">
+                    <button type="submit" class="btn btn-danger">Delete Job</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function deleteJob(jobId, jobName) {
+    document.getElementById('deleteJobName').textContent = jobName;
+    document.getElementById('deleteForm').action = '/admin/jobs/' + jobId;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script>
+{% endblock %}

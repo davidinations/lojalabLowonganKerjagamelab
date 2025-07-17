@@ -16,6 +16,7 @@ return function ($db) {
 			'username' => 'superadmin',
 			'email' => 'superadmin@company.com',
 			'password' => password_hash('admin123', PASSWORD_DEFAULT),
+			'id_organizations' => null, // Super Admin not tied to specific org
 			'create_time' => date('Y-m-d H:i:s'),
 			'create_id' => 1,
 			'archived' => 0
@@ -25,6 +26,7 @@ return function ($db) {
 			'username' => 'admin',
 			'email' => 'admin@company.com',
 			'password' => password_hash('admin123', PASSWORD_DEFAULT),
+			'id_organizations' => null, // Admin not tied to specific org
 			'create_time' => date('Y-m-d H:i:s'),
 			'create_id' => 1,
 			'archived' => 0
@@ -34,6 +36,7 @@ return function ($db) {
 			'username' => 'recruiter',
 			'email' => 'recruiter@company.com',
 			'password' => password_hash('recruiter123', PASSWORD_DEFAULT),
+			'id_organizations' => 1, // Tied to first organization
 			'create_time' => date('Y-m-d H:i:s'),
 			'create_id' => 1,
 			'archived' => 0

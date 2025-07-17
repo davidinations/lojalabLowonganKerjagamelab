@@ -1,0 +1,238 @@
+{% extends "master.twig" %}
+
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/dashboard">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/profile">
+                            <i class="fas fa-user"></i> My Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/jobs">
+                            <i class="fas fa-briefcase"></i> Browse Jobs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/applications">
+                            <i class="fas fa-file-alt"></i> My Applications
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/profile/skills">
+                            <i class="fas fa-tools"></i> My Skills
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Welcome, {{ user.username }}!</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="/profile" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Completion Alert -->
+            <div class="alert alert-info" role="alert">
+                <h4 class="alert-heading">Complete Your Profile!</h4>
+                <p>Make sure your profile is complete to increase your chances of getting hired. Add your skills, experience, and personal information.</p>
+                <hr>
+                <p class="mb-0">
+                    <a href="/profile" class="btn btn-info">Update Profile</a>
+                </p>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="row">
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Applications Submitted</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ applications|length }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-file-alt fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Profile Completion</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        {% set completion = 0 %}
+                                        {% if user.tempat_lahir %}{% set completion = completion + 20 %}{% endif %}
+                                        {% if user.tanggal_lahir %}{% set completion = completion + 20 %}{% endif %}
+                                        {% if user.agama %}{% set completion = completion + 20 %}{% endif %}
+                                        {% if user.gender %}{% set completion = completion + 20 %}{% endif %}
+                                        {% if user.pendidikan_terakhir %}{% set completion = completion + 20 %}{% endif %}
+                                        {{ completion }}%
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-user-check fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Account Status</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">Active</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Applications -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Recent Applications</h6>
+                        </div>
+                        <div class="card-body">
+                            {% if applications|length > 0 %}
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Job Title</th>
+                                                <th>Company</th>
+                                                <th>Applied Date</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for application in applications|slice(0, 5) %}
+                                            <tr>
+                                                <td>{{ application.job_title }}</td>
+                                                <td>{{ application.company_name }}</td>
+                                                <td>{{ application.created_at|date('d M Y') }}</td>
+                                                <td>
+                                                    {% if application.status == 'pending' %}
+                                                        <span class="badge bg-warning">Pending</span>
+                                                    {% elseif application.status == 'accepted' %}
+                                                        <span class="badge bg-success">Accepted</span>
+                                                    {% elseif application.status == 'rejected' %}
+                                                        <span class="badge bg-danger">Rejected</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="text-center">
+                                    <a href="/applications" class="btn btn-primary">View All Applications</a>
+                                </div>
+                            {% else %}
+                                <div class="text-center">
+                                    <i class="fas fa-search fa-3x text-gray-300 mb-3"></i>
+                                    <p class="text-muted">You haven't applied to any jobs yet.</p>
+                                    <a href="/jobs" class="btn btn-primary">Browse Jobs</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                        </div>
+                        <div class="card-body">
+                            <a href="/jobs" class="btn btn-primary btn-block mb-2">
+                                <i class="fas fa-search"></i> Browse Jobs
+                            </a>
+                            <a href="/profile" class="btn btn-success btn-block mb-2">
+                                <i class="fas fa-edit"></i> Update Profile
+                            </a>
+                            <a href="/profile/skills" class="btn btn-info btn-block mb-2">
+                                <i class="fas fa-tools"></i> Manage Skills
+                            </a>
+                            <a href="/applications" class="btn btn-warning btn-block">
+                                <i class="fas fa-file-alt"></i> View Applications
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<style>
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+.text-gray-800 {
+    color: #5a5c69 !important;
+}
+.text-gray-300 {
+    color: #dddfeb !important;
+}
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 48px 0 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+.sidebar .nav-link {
+    font-weight: 500;
+    color: #333;
+}
+.sidebar .nav-link.active {
+    color: #007bff;
+}
+</style>
+{% endblock %}

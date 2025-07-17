@@ -1,0 +1,130 @@
+{% extends "master.twig" %}
+
+{% block title %}Create Administrator{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Create New Administrator</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="/admin/admins" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Administrators
+                    </a>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Administrator Information</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if error %}
+                                <div class="alert alert-danger">{{ error }}</div>
+                            {% endif %}
+
+                            <form method="POST" action="/admin/admins/create">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="username" name="username" 
+                                                   value="{{ old.username ?? '' }}" required>
+                                            <div class="form-text">Must be unique and at least 3 characters</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                            <input type="email" class="form-control" id="email" name="email" 
+                                                   value="{{ old.email ?? '' }}" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                                            <input type="password" class="form-control" id="password" name="password" required>
+                                            <div class="form-text">Minimum 6 characters</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="confirm_password" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="id_role" class="form-label">Role <span class="text-danger">*</span></label>
+                                            <select class="form-select" id="id_role" name="id_role" required>
+                                                <option value="">Select Role</option>
+                                                {% for role in roles %}
+                                                    <option value="{{ role.id }}" {{ (old.id_role == role.id) ? 'selected' : '' }}>
+                                                        {{ role.nama }} (Level {{ role.level }})
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="id_organizations" class="form-label">Organization</label>
+                                            <select class="form-select" id="id_organizations" name="id_organizations">
+                                                <option value="">All Organizations (Super Admin/Admin)</option>
+                                                {% for organization in organizations %}
+                                                    <option value="{{ organization.id }}" {{ (old.id_organizations == organization.id) ? 'selected' : '' }}>
+                                                        {{ organization.nama }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                            <div class="form-text">Leave empty for Super Admin/Admin roles</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a href="/admin/admins" class="btn btn-secondary me-md-2">Cancel</a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Create Administrator
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-hide organization field for Super Admin and Admin roles
+document.getElementById('id_role').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const roleText = selectedOption.text.toLowerCase();
+    const orgField = document.getElementById('id_organizations');
+    const orgGroup = orgField.closest('.mb-3');
+    
+    if (roleText.includes('super admin') || roleText.includes('admin')) {
+        orgField.value = '';
+        orgGroup.style.display = 'none';
+    } else {
+        orgGroup.style.display = 'block';
+    }
+});
+
+// Trigger the event on page load
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('id_role').dispatchEvent(new Event('change'));
+});
+</script>
+{% endblock %}

@@ -1,0 +1,242 @@
+{% extends "master.twig" %}
+
+{% block title %}Admin - Job Applications{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Applications for: {{ job.nama_lowongan }}</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="/admin/jobs" class="btn btn-secondary me-2">
+                        <i class="fas fa-arrow-left"></i> Back to Jobs
+                    </a>
+                    <a href="/admin/jobs/{{ job.id }}" class="btn btn-outline-primary">
+                        <i class="fas fa-eye"></i> View Job Details
+                    </a>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h6 class="mb-1">{{ job.nama_lowongan }}</h6>
+                                    <small class="text-muted">
+                                        {{ job.organization_name ?? 'Unknown Organization' }} • 
+                                        {{ job.location_name ?? 'Location not specified' }}
+                                    </small>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <span class="badge bg-info">{{ applications|length }} Application(s)</span>
+                                    {% if job.deadline_lowongan %}
+                                        <br><small class="text-muted">Deadline: {{ job.deadline_lowongan|date('d M Y') }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    {% if applications|length > 0 %}
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Applicant</th>
+                                        <th>Applied Date</th>
+                                        <th>Status</th>
+                                        <th>Cover Letter</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for application in applications %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ application.username }}</strong>
+                                            {% if application.email %}
+                                                <br><small class="text-muted">{{ application.email }}</small>
+                                            {% endif %}
+                                            {% if application.tempat_lahir %}
+                                                <br><small class="text-muted">{{ application.tempat_lahir }}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if application.create_time %}
+                                                {{ application.create_time|date('d M Y H:i') }}
+                                            {% else %}
+                                                <span class="text-muted">Unknown</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if application.status == 'pending' %}
+                                                <span class="badge bg-warning">Pending</span>
+                                            {% elseif application.status == 'approved' %}
+                                                <span class="badge bg-success">Approved</span>
+                                            {% elseif application.status == 'rejected' %}
+                                                <span class="badge bg-danger">Rejected</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ application.status|title }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if application.cover_letter %}
+                                                <button type="button" class="btn btn-sm btn-outline-info" 
+                                                        data-bs-toggle="modal" data-bs-target="#coverLetterModal"
+                                                        onclick="showCoverLetter('{{ application.username }}', `{{ application.cover_letter|e('js') }}`)">
+                                                    <i class="fas fa-file-text"></i> View
+                                                </button>
+                                            {% else %}
+                                                <span class="text-muted">None</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="/admin/applications/{{ application.id }}" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                {% if application.status == 'pending' %}
+                                                    <button type="button" class="btn btn-sm btn-outline-success" title="Approve" 
+                                                            onclick="approveApplication({{ application.id }})">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Reject" 
+                                                            onclick="rejectApplication({{ application.id }})">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Application Statistics -->
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h6>Application Statistics</h6>
+                                        <div class="row text-center">
+                                            <div class="col-md-3">
+                                                <span class="badge bg-info fs-6">{{ applications|length }}</span>
+                                                <br><small>Total Applications</small>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <span class="badge bg-warning fs-6">{{ applications|filter(app => app.status == 'pending')|length }}</span>
+                                                <br><small>Pending Review</small>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <span class="badge bg-success fs-6">{{ applications|filter(app => app.status == 'approved')|length }}</span>
+                                                <br><small>Approved</small>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <span class="badge bg-danger fs-6">{{ applications|filter(app => app.status == 'rejected')|length }}</span>
+                                                <br><small>Rejected</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                            <h5>No Applications Yet</h5>
+                            <p class="text-muted">This job position hasn't received any applications yet.</p>
+                            <a href="/admin/jobs/{{ job.id }}" class="btn btn-outline-primary">
+                                <i class="fas fa-eye"></i> View Job Details
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cover Letter Modal -->
+<div class="modal fade" id="coverLetterModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cover Letter - <span id="applicantName"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="coverLetterContent" class="bg-light p-3 rounded" style="white-space: pre-wrap;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Action Modals -->
+<div class="modal fade" id="approveModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Approve Application</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to approve this application?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="approveForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-success">Approve</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Reject Application</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to reject this application?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="rejectForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Reject</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showCoverLetter(applicantName, coverLetter) {
+    document.getElementById('applicantName').textContent = applicantName;
+    document.getElementById('coverLetterContent').textContent = coverLetter;
+}
+
+function approveApplication(applicationId) {
+    document.getElementById('approveForm').action = '/admin/applications/' + applicationId + '/approve';
+    new bootstrap.Modal(document.getElementById('approveModal')).show();
+}
+
+function rejectApplication(applicationId) {
+    document.getElementById('rejectForm').action = '/admin/applications/' + applicationId + '/reject';
+    new bootstrap.Modal(document.getElementById('rejectModal')).show();
+}
+</script>
+{% endblock %}

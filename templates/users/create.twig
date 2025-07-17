@@ -1,0 +1,131 @@
+{% extends "master.twig" %}
+
+{% block title %}Create User{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Create New User</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="/admin/users" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Users
+                    </a>
+                </div>
+            </div>
+
+            {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% endif %}
+
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Username *</label>
+                                    <input type="text" class="form-control" id="username" name="username" value="{{ data.username ?? '' }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email *</label>
+                                    <input type="email" class="form-control" id="email" name="email" value="{{ data.email ?? '' }}" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Password *</label>
+                                    <input type="password" class="form-control" id="password" name="password" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="tempat_lahir" class="form-label">Tempat Lahir</label>
+                                    <input type="text" class="form-control" id="tempat_lahir" name="tempat_lahir" value="{{ data.tempat_lahir ?? '' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
+                                    <input type="date" class="form-control" id="tanggal_lahir" name="tanggal_lahir" value="{{ data.tanggal_lahir ?? '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="agama" class="form-label">Agama</label>
+                                    <select class="form-control" id="agama" name="agama">
+                                        <option value="">Select Religion</option>
+                                        <option value="Islam" {{ data.agama == 'Islam' ? 'selected' : '' }}>Islam</option>
+                                        <option value="Kristen" {{ data.agama == 'Kristen' ? 'selected' : '' }}>Kristen</option>
+                                        <option value="Katolik" {{ data.agama == 'Katolik' ? 'selected' : '' }}>Katolik</option>
+                                        <option value="Hindu" {{ data.agama == 'Hindu' ? 'selected' : '' }}>Hindu</option>
+                                        <option value="Buddha" {{ data.agama == 'Buddha' ? 'selected' : '' }}>Buddha</option>
+                                        <option value="Konghucu" {{ data.agama == 'Konghucu' ? 'selected' : '' }}>Konghucu</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="gender" class="form-label">Gender</label>
+                                    <select class="form-control" id="gender" name="gender">
+                                        <option value="">Select Gender</option>
+                                        <option value="Laki-laki" {{ data.gender == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                                        <option value="Perempuan" {{ data.gender == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="pendidikan_terakhir" class="form-label">Pendidikan Terakhir</label>
+                                    <select class="form-control" id="pendidikan_terakhir" name="pendidikan_terakhir">
+                                        <option value="">Select Education</option>
+                                        <option value="SD" {{ data.pendidikan_terakhir == 'SD' ? 'selected' : '' }}>SD</option>
+                                        <option value="SMP" {{ data.pendidikan_terakhir == 'SMP' ? 'selected' : '' }}>SMP</option>
+                                        <option value="SMA" {{ data.pendidikan_terakhir == 'SMA' ? 'selected' : '' }}>SMA</option>
+                                        <option value="D3" {{ data.pendidikan_terakhir == 'D3' ? 'selected' : '' }}>D3</option>
+                                        <option value="S1" {{ data.pendidikan_terakhir == 'S1' ? 'selected' : '' }}>S1</option>
+                                        <option value="S2" {{ data.pendidikan_terakhir == 'S2' ? 'selected' : '' }}>S2</option>
+                                        <option value="S3" {{ data.pendidikan_terakhir == 'S3' ? 'selected' : '' }}>S3</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="tempat_pendidikan_terakhir" class="form-label">Tempat Pendidikan Terakhir</label>
+                                    <input type="text" class="form-control" id="tempat_pendidikan_terakhir" name="tempat_pendidikan_terakhir" value="{{ data.tempat_pendidikan_terakhir ?? '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="jurusan_pendidikan_terakhir" class="form-label">Jurusan Pendidikan Terakhir</label>
+                                    <input type="text" class="form-control" id="jurusan_pendidikan_terakhir" name="jurusan_pendidikan_terakhir" value="{{ data.jurusan_pendidikan_terakhir ?? '' }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <a href="/admin/users" class="btn btn-secondary me-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Create User</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

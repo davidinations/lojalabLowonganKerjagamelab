@@ -1,0 +1,186 @@
+{% extends "master.twig" %}
+
+{% block title %}Admin - Job Details{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Job Details</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="/admin/jobs" class="btn btn-secondary me-2">
+                        <i class="fas fa-arrow-left"></i> Back to Jobs
+                    </a>
+                    {% if admin.role_level <= 2 or (admin.role_level == 3 and job.organization_id == admin.organization_id) %}
+                        <a href="/admin/jobs/{{ job.id }}/edit" class="btn btn-warning me-2">
+                            <i class="fas fa-edit"></i> Edit Job
+                        </a>
+                    {% endif %}
+                    <a href="/admin/jobs/{{ job.id }}/applications" class="btn btn-primary">
+                        <i class="fas fa-users"></i> View Applications
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">{{ job.nama_lowongan }}</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if job.deskripsi %}
+                                <h6>Job Description</h6>
+                                <p class="mb-4">{{ job.deskripsi|nl2br }}</p>
+                            {% endif %}
+
+                            {% if job.requirement %}
+                                <h6>Requirements</h6>
+                                <p class="mb-4">{{ job.requirement|nl2br }}</p>
+                            {% endif %}
+
+                            {% if job.benefit %}
+                                <h6>Benefits</h6>
+                                <p class="mb-0">{{ job.benefit|nl2br }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="card-title mb-0">Job Information</h6>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-sm-5">Organization:</dt>
+                                <dd class="col-sm-7">
+                                    {% if job.organization_name %}
+                                        {{ job.organization_name }}
+                                    {% else %}
+                                        <span class="text-muted">Unknown</span>
+                                    {% endif %}
+                                </dd>
+
+                                <dt class="col-sm-5">Location:</dt>
+                                <dd class="col-sm-7">
+                                    {% if job.location_name %}
+                                        {{ job.location_name }}
+                                    {% else %}
+                                        <span class="text-muted">Not specified</span>
+                                    {% endif %}
+                                </dd>
+
+                                <dt class="col-sm-5">Job Type:</dt>
+                                <dd class="col-sm-7">
+                                    {% if job.type_name %}
+                                        <span class="badge bg-info">{{ job.type_name }}</span>
+                                    {% else %}
+                                        <span class="text-muted">Not specified</span>
+                                    {% endif %}
+                                </dd>
+
+                                <dt class="col-sm-5">Posted:</dt>
+                                <dd class="col-sm-7">
+                                    {% if job.create_time %}
+                                        {{ job.create_time|date('d M Y H:i') }}
+                                    {% else %}
+                                        <span class="text-muted">Unknown</span>
+                                    {% endif %}
+                                </dd>
+
+                                <dt class="col-sm-5">Status:</dt>
+                                <dd class="col-sm-7">
+                                    {% if job.archived == 0 %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Archived</span>
+                                    {% endif %}
+                                </dd>
+
+                                {% if job.gaji_min or job.gaji_max %}
+                                    <dt class="col-sm-5">Salary Range:</dt>
+                                    <dd class="col-sm-7">
+                                        {% if job.gaji_min and job.gaji_max %}
+                                            Rp {{ job.gaji_min|number_format }} - Rp {{ job.gaji_max|number_format }}
+                                        {% elseif job.gaji_min %}
+                                            From Rp {{ job.gaji_min|number_format }}
+                                        {% elseif job.gaji_max %}
+                                            Up to Rp {{ job.gaji_max|number_format }}
+                                        {% endif %}
+                                    </dd>
+                                {% endif %}
+
+                                {% if job.deadline_lowongan %}
+                                    <dt class="col-sm-5">Deadline:</dt>
+                                    <dd class="col-sm-7">
+                                        {{ job.deadline_lowongan|date('d M Y') }}
+                                        {% if job.deadline_lowongan|date('Y-m-d') < 'now'|date('Y-m-d') %}
+                                            <span class="badge bg-danger ms-1">Expired</span>
+                                        {% endif %}
+                                    </dd>
+                                {% endif %}
+                            </dl>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h6 class="card-title mb-0">Quick Actions</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a href="/admin/jobs/{{ job.id }}/applications" class="btn btn-outline-primary">
+                                    <i class="fas fa-users"></i> View Applications
+                                </a>
+                                {% if admin.role_level <= 2 or (admin.role_level == 3 and job.organization_id == admin.organization_id) %}
+                                    <a href="/admin/jobs/{{ job.id }}/edit" class="btn btn-outline-warning">
+                                        <i class="fas fa-edit"></i> Edit Job
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger" onclick="deleteJob({{ job.id }}, '{{ job.nama_lowongan }}')">
+                                        <i class="fas fa-trash"></i> Delete Job
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete job <strong id="deleteJobName"></strong>?</p>
+                <p class="text-muted">This action will archive the job and cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <input type="hidden" name="_METHOD" value="DELETE">
+                    <button type="submit" class="btn btn-danger">Delete Job</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function deleteJob(jobId, jobName) {
+    document.getElementById('deleteJobName').textContent = jobName;
+    document.getElementById('deleteForm').action = '/admin/jobs/' + jobId;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script>
+{% endblock %}
